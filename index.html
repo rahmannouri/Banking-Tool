@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ابزار جامع بانکی و مالی</title>
+<style>
+  :root{
+    --paper:#F4F4F9; --paper-raised:#FFFFFF; --ink:#2c3e50; --ink-soft:#556677;
+    --teal:#0E6B57; --teal-deep:#0A4E40; --teal-tint:#E3EFEC;
+    --line:#D7DEDB; --radius:14px; --shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  body{ font-family: Tahoma, sans-serif; background:var(--paper); color:var(--ink); padding:20px; margin:0; }
+  .wrap{ max-width:600px; margin:0 auto; }
+  .section{ background:var(--paper-raised); padding:20px; margin-bottom:20px; border-radius:var(--radius); box-shadow:var(--shadow); }
+  h1, h2{ color:var(--teal-deep); }
+  input, select, button{ width:100%; padding:12px; margin:8px 0; border:1px solid var(--line); border-radius:8px; box-sizing:border-box; }
+  button{ background:var(--teal); color:#fff; font-weight:bold; cursor:pointer; }
+  table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+  th, td{ border:1px solid var(--line); padding:8px; text-align:center; }
+  th{ background:var(--teal-tint); }
+  .result{ margin-top:15px; padding:15px; background:var(--paper); border-radius:8px; display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ابزار جامع بانکی</h1>
+
+  <div class="section">
+    <h2>شناسایی بانک (۶ رقم اول)</h2>
+    <input type="text" id="binInput" placeholder="۶ رقم اول کارت" maxlength="6">
+    <button onclick="detectBank()">بررسی بانک</button>
+    <div id="bankResult" class="result"></div>
+  </div>
+
+  <div class="section">
+    <h2>محاسبه شبا (حساب)</h2>
+    <select id="bankSelect"></select>
+    <input type="text" id="accInput" placeholder="شماره حساب">
+    <button onclick="alert('به دلیل محدودیت‌های امنیتی، این محاسبه باید در وب‌سایت اصلی بانک انجام شود.')">محاسبه</button>
+  </div>
+
+  <div class="section">
+    <h2>کارمزد انتقال (نرخ ۱۴۰۵)</h2>
+    <table>
+      <tr><th>روش</th><th>کارمزد</th></tr>
+      <tr><td>پایا انفرادی</td><td>۰.۰۱٪ (کف ۳ - سقف ۷۵ هزار ریال)</td></tr>
+      <tr><td>ساتنا</td><td>۰.۰۰۲٪ (سقف ۳۵۰ هزار ریال)</td></tr>
+      <tr><td>کارت‌به‌کارت</td><td>تا ۱۰م: ۹هزار | مازاد: ۳.۲هزار ریال</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  const BANKS = {
+    "603799": {name: "بانک ملی", url: "https://bmi.ir/landing/shaba"},
+    "589210": {name: "بانک سپه", url: "https://banksepah.ir/shaba"},
+    "603769": {name: "بانک صادرات", url: "https://www.bsi.ir/shaba"},
+    "610433": {name: "بانک ملت", url: "https://www.bankmellat.ir/shaba.aspx"},
+    "585983": {name: "بانک تجارت", url: "https://www.tejaratbank.ir/shaba"}
+  };
+
+  function detectBank(){
+    const bin = document.getElementById('binInput').value;
+    const res = BANKS[bin];
+    const div = document.getElementById('bankResult');
+    div.style.display = 'block';
+    div.innerHTML = res ? `بانک: ${res.name}<br><a href="${res.url}" target="_blank">لینک تبدیل شبا</a>` : 'یافت نشد';
+  }
+
+  const select = document.getElementById('bankSelect');
+  Object.keys(BANKS).forEach(k => {
+    let opt = document.createElement('option');
+    opt.value = k; opt.innerHTML = BANKS[k].name;
+    select.appendChild(opt);
+  });
+</script>
+</body>
+</html>
