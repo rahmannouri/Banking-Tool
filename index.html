@@ -3,77 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ابزار جامع بانکی و مالی</title>
+<title>ابزار جامع بانکی</title>
 <style>
-  :root{
-    --paper:#F4F4F9; --paper-raised:#FFFFFF; --ink:#2c3e50; --ink-soft:#556677;
-    --teal:#0E6B57; --teal-deep:#0A4E40; --teal-tint:#E3EFEC;
-    --line:#D7DEDB; --radius:14px; --shadow: 0 4px 6px rgba(0,0,0,0.05);
-  }
-  body{ font-family: Tahoma, sans-serif; background:var(--paper); color:var(--ink); padding:20px; margin:0; }
-  .wrap{ max-width:600px; margin:0 auto; }
-  .section{ background:var(--paper-raised); padding:20px; margin-bottom:20px; border-radius:var(--radius); box-shadow:var(--shadow); }
-  h1, h2{ color:var(--teal-deep); }
-  input, select, button{ width:100%; padding:12px; margin:8px 0; border:1px solid var(--line); border-radius:8px; box-sizing:border-box; }
-  button{ background:var(--teal); color:#fff; font-weight:bold; cursor:pointer; }
-  table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
-  th, td{ border:1px solid var(--line); padding:8px; text-align:center; }
-  th{ background:var(--teal-tint); }
-  .result{ margin-top:15px; padding:15px; background:var(--paper); border-radius:8px; display:none; }
+  :root{ --teal:#0E6B57; --paper:#F4F4F9; --radius:14px; }
+  body{ font-family: Tahoma, sans-serif; background:var(--paper); padding:20px; }
+  .wrap{ max-width:600px; margin:0 auto; background:white; padding:20px; border-radius:var(--radius); box-shadow:0 4px 6px rgba(0,0,0,0.1); }
+  input, select, button{ width:100%; padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:8px; box-sizing:border-box; }
+  button{ background:var(--teal); color:white; font-weight:bold; cursor:pointer; }
+  .result{ margin-top:10px; padding:10px; background:#eef; border-radius:8px; color:#333; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>ابزار جامع بانکی</h1>
 
-  <div class="section">
-    <h2>شناسایی بانک (۶ رقم اول)</h2>
+  <!-- محاسبه کارمزد -->
+  <div>
+    <h2>محاسبه کارمزد و سقف انتقال</h2>
+    <input type="text" id="amount" placeholder="مبلغ انتقال (به ریال)" onkeyup="formatNumber(this)">
+    <select id="transferType">
+      <option value="card">کارت‌به‌کارت (سقف ۱۵۰ میلیون)</option>
+      <option value="paya">پایا (سقف ۲ میلیارد)</option>
+      <option value="satna">ساتنا (حداقل ۱ میلیارد)</option>
+      <option value="pol">پل (سقف ۱ میلیارد)</option>
+    </select>
+    <button onclick="calcFee()">محاسبه</button>
+    <div id="feeResult" class="result"></div>
+  </div>
+
+  <!-- شناسایی بانک -->
+  <div>
+    <h2>شناسایی بانک و لینک شبا</h2>
     <input type="text" id="binInput" placeholder="۶ رقم اول کارت" maxlength="6">
     <button onclick="detectBank()">بررسی بانک</button>
     <div id="bankResult" class="result"></div>
   </div>
 
-  <div class="section">
-    <h2>محاسبه شبا (حساب)</h2>
-    <select id="bankSelect"></select>
-    <input type="text" id="accInput" placeholder="شماره حساب">
-    <button onclick="alert('به دلیل محدودیت‌های امنیتی، این محاسبه باید در وب‌سایت اصلی بانک انجام شود.')">محاسبه</button>
-  </div>
-
-  <div class="section">
-    <h2>کارمزد انتقال (نرخ ۱۴۰۵)</h2>
-    <table>
-      <tr><th>روش</th><th>کارمزد</th></tr>
-      <tr><td>پایا انفرادی</td><td>۰.۰۱٪ (کف ۳ - سقف ۷۵ هزار ریال)</td></tr>
-      <tr><td>ساتنا</td><td>۰.۰۰۲٪ (سقف ۳۵۰ هزار ریال)</td></tr>
-      <tr><td>کارت‌به‌کارت</td><td>تا ۱۰م: ۹هزار | مازاد: ۳.۲هزار ریال</td></tr>
-    </table>
+  <!-- پشتیبانی PSP -->
+  <div>
+    <h2>تلفن پشتیبانی PSP</h2>
+    <select id="pspSelect" onchange="showPspPhone()">
+      <option value="">انتخاب شرکت...</option>
+      <option value="021-42739000">به‌پرداخت ملت</option>
+      <option value="021-2318">سامان (سپ)</option>
+      <option value="021-8592">تجارت الکترونیک پارسیان</option>
+      <option value="021-43697000">سداد</option>
+      <option value="021-64833">ایران‌کیش</option>
+      <option value="021-89310">آسان پرداخت</option>
+    </select>
+    <div id="pspResult" class="result"></div>
   </div>
 </div>
 
 <script>
+  // لیست جامع بانک‌ها
   const BANKS = {
     "603799": {name: "بانک ملی", url: "https://bmi.ir/landing/shaba"},
     "589210": {name: "بانک سپه", url: "https://banksepah.ir/shaba"},
     "603769": {name: "بانک صادرات", url: "https://www.bsi.ir/shaba"},
     "610433": {name: "بانک ملت", url: "https://www.bankmellat.ir/shaba.aspx"},
-    "585983": {name: "بانک تجارت", url: "https://www.tejaratbank.ir/shaba"}
+    "585983": {name: "بانک تجارت", url: "https://www.tejaratbank.ir/shaba"},
+    "621986": {name: "بانک سامان", url: "https://www.sb24.ir/shaba"},
+    "639347": {name: "بانک پاسارگاد", url: "https://www.bpi.ir/shaba"},
+    "589463": {name: "بانک رفاه", url: "https://www.refah-bank.ir/shaba"},
+    "603770": {name: "بانک کشاورزی", url: "https://ib.bki.ir/shaba"},
+    "639217": {name: "بانک کشاورزی", url: "https://ib.bki.ir/shaba"},
+    "627412": {name: "بانک اقتصاد نوین", url: "https://www.enbank.ir/shaba"},
+    "627381": {name: "بانک انصار", url: "https://www.sepahbank.ir/"},
+    "639607": {name: "بانک سرمایه", url: "https://www.sbank.ir/shaba"},
+    "627488": {name: "بانک کارآفرین", url: "https://www.karafarinbank.ir/shaba"},
+    "639346": {name: "بانک سینا", url: "https://www.sinabank.ir/shaba"},
+    "639345": {name: "بانک مهر ایران", url: "https://www.qmb.ir/shaba"},
+    "502229": {name: "بانک پاسارگاد", url: "https://www.bpi.ir/shaba"},
+    "627760": {name: "پست بانک", url: "https://www.postbank.ir/shaba"},
+    "628023": {name: "بانک مسکن", url: "https://bank-maskan.ir/shaba"},
+    "627961": {name: "بانک دی", url: "https://bank-day.ir/shaba"},
+    "636214": {name: "بانک آینده", url: "https://ba24.ir/shaba"},
+    "505416": {name: "بانک گردشگری", url: "https://www.tourism-bank.ir/shaba"},
+    "636949": {name: "بانک حکمت ایرانیان", url: "https://www.sepahbank.ir/"}
   };
 
-  function detectBank(){
-    const bin = document.getElementById('binInput').value;
-    const res = BANKS[bin];
-    const div = document.getElementById('bankResult');
-    div.style.display = 'block';
-    div.innerHTML = res ? `بانک: ${res.name}<br><a href="${res.url}" target="_blank">لینک تبدیل شبا</a>` : 'یافت نشد';
+  function formatNumber(input) {
+    let val = input.value.replace(/,/g, "");
+    input.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  const select = document.getElementById('bankSelect');
-  Object.keys(BANKS).forEach(k => {
-    let opt = document.createElement('option');
-    opt.value = k; opt.innerHTML = BANKS[k].name;
-    select.appendChild(opt);
-  });
+  function calcFee() {
+    let amt = parseInt(document.getElementById('amount').value.replace(/,/g, ""));
+    let type = document.getElementById('transferType').value;
+    let resDiv = document.getElementById('feeResult');
+
+    if (type === 'card' && amt > 150000000) resDiv.innerHTML = "خطا: سقف کارت‌به‌کارت ۱۵۰ میلیون است.";
+    else if (type === 'paya' && amt > 2000000000) resDiv.innerHTML = "خطا: سقف پایا ۲ میلیارد است.";
+    else if (type === 'satna' && amt < 1000000000) resDiv.innerHTML = "خطا: حداقل مبلغ ساتنا ۱ میلیارد است.";
+    else if (type === 'pol' && amt > 1000000000) resDiv.innerHTML = "خطا: سقف پل ۱ میلیارد است.";
+    else {
+      let fee = 0;
+      if (type === 'card') fee = (amt <= 100000000 ? 9000 : 12200);
+      else if (type === 'paya') fee = Math.min(Math.max(amt * 0.0001, 3000), 75000);
+      else if (type === 'satna') fee = Math.min(amt * 0.00002, 350000);
+      else if (type === 'pol') fee = Math.min(Math.max(amt * 0.0002, 2500), 25000);
+      resDiv.innerHTML = "کارمزد: " + Math.round(fee).toLocaleString() + " ریال";
+    }
+  }
+
+  function detectBank() {
+    let bin = document.getElementById('binInput').value;
+    let res = BANKS[bin];
+    document.getElementById('bankResult').innerHTML = res ? 
+      `بانک: ${res.name} <br> <a href="${res.url}" target="_blank">دریافت شبا (سایت بانک)</a>` : "بانک مورد نظر در لیست یافت نشد.";
+  }
+
+  function showPspPhone() {
+    let phone = document.getElementById('pspSelect').value;
+    document.getElementById('pspResult').innerHTML = phone ? "تلفن پشتیبانی: " + phone : "";
+  }
 </script>
 </body>
 </html>
