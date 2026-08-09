@@ -45,42 +45,63 @@
     <select id="pspSelect" onchange="showPspPhone()">
       <option value="">انتخاب شرکت...</option>
       <option value="021-42739000">به‌پرداخت ملت</option>
-      <option value="021-2318">سامان (سپ)</option>
-      <option value="021-8592">تجارت الکترونیک پارسیان</option>
-      <option value="021-43697000">سداد</option>
+      <option value="021-2318">پرداخت الکترونیک سامان (سپ)</option>
+      <option value="021-8592">تجارت الکترونیک پارسیان (تاپ)</option>
+      <option value="021-43697000">سداد (ملی)</option>
       <option value="021-64833">ایران‌کیش</option>
-      <option value="021-89310">آسان پرداخت</option>
+      <option value="021-89310">آسان پرداخت (آپ)</option>
+      <option value="021-23598">پرداخت الکترونیک پاسارگاد</option>
+      <option value="021-8480">فن‌آوا کارت</option>
+      <option value="021-42000">پرداخت نوین آرین</option>
+      <option value="021-27636000">الکترونیک کارت دماوند</option>
+      <option value="021-4500">سایان کارت</option>
+      <option value="021-83333">موتو (پرداخت الکترونیک فردا)</option>
     </select>
     <div id="pspResult" class="result"></div>
   </div>
 </div>
 
 <script>
-  // لیست جامع بانک‌ها
+  // لیست اصلاح‌شده و جامع پیش‌شماره بانک‌ها و لینک شبا
   const BANKS = {
-    "603799": {name: "بانک ملی", url: "https://bmi.ir/landing/shaba"},
+    "603799": {name: "بانک ملی ایران", url: "https://bmi.ir/landing/shaba"},
     "589210": {name: "بانک سپه", url: "https://banksepah.ir/shaba"},
-    "603769": {name: "بانک صادرات", url: "https://www.bsi.ir/shaba"},
-    "610433": {name: "بانک ملت", url: "https://www.bankmellat.ir/shaba.aspx"},
-    "585983": {name: "بانک تجارت", url: "https://www.tejaratbank.ir/shaba"},
-    "621986": {name: "بانک سامان", url: "https://www.sb24.ir/shaba"},
-    "639347": {name: "بانک پاسارگاد", url: "https://www.bpi.ir/shaba"},
-    "589463": {name: "بانک رفاه", url: "https://www.refah-bank.ir/shaba"},
+    "627648": {name: "بانک توسعه صادرات ایران", url: "https://www.edbi.ir/shaba"},
+    "627961": {name: "بانک صنعت و معدن", url: "https://www.bim.ir/shaba"},
     "603770": {name: "بانک کشاورزی", url: "https://ib.bki.ir/shaba"},
     "639217": {name: "بانک کشاورزی", url: "https://ib.bki.ir/shaba"},
+    "628023": {name: "بانک مسکن", url: "https://bank-maskan.ir/shaba"},
     "627412": {name: "بانک اقتصاد نوین", url: "https://www.enbank.ir/shaba"},
     "627381": {name: "بانک انصار", url: "https://www.sepahbank.ir/"},
-    "639607": {name: "بانک سرمایه", url: "https://www.sbank.ir/shaba"},
-    "627488": {name: "بانک کارآفرین", url: "https://www.karafarinbank.ir/shaba"},
-    "639346": {name: "بانک سینا", url: "https://www.sinabank.ir/shaba"},
-    "639345": {name: "بانک مهر ایران", url: "https://www.qmb.ir/shaba"},
+    "639347": {name: "بانک پاسارگاد", url: "https://www.bpi.ir/shaba"},
     "502229": {name: "بانک پاسارگاد", url: "https://www.bpi.ir/shaba"},
-    "627760": {name: "پست بانک", url: "https://www.postbank.ir/shaba"},
-    "628023": {name: "بانک مسکن", url: "https://bank-maskan.ir/shaba"},
-    "627961": {name: "بانک دی", url: "https://bank-day.ir/shaba"},
+    "627353": {name: "بانک تجارت", url: "https://www.tejaratbank.ir/shaba"},
+    "585983": {name: "بانک تجارت", url: "https://www.tejaratbank.ir/shaba"},
+    "589463": {name: "بانک رفاه کارگران", url: "https://www.refah-bank.ir/shaba"},
+    "621986": {name: "بانک سامان", url: "https://www.sb24.ir/shaba"},
+    "639346": {name: "بانک سینا", url: "https://www.sinabank.ir/shaba"},
+    "639607": {name: "بانک سرمایه", url: "https://www.sbank.ir/shaba"},
+    "502908": {name: "بانک توسعه تعاون", url: "https://www.ttbank.ir/shaba"},
+    "627488": {name: "بانک کارآفرین", url: "https://www.karafarinbank.ir/shaba"},
+    "502910": {name: "بانک کارآفرین", url: "https://www.karafarinbank.ir/shaba"},
+    "606373": {name: "بانک قرض‌الحسنه مهر ایران", url: "https://www.qmb.ir/shaba"},
+    "639370": {name: "بانک مهر اقتصاد", url: "https://www.sepahbank.ir/"},
+    "628157": {name: "بانک شهر", url: "https://shahr-bank.ir/shaba"},
+    "505785": {name: "بانک ایران زمین", url: "https://www.izbank.ir/shaba"},
     "636214": {name: "بانک آینده", url: "https://ba24.ir/shaba"},
+    "502938": {name: "بانک دی", url: "https://bank-day.ir/shaba"},
+    "606256": {name: "بانک آینده", url: "https://ba24.ir/shaba"},
+    "639341": {name: "بانک رسالت", url: "https://www.rqb.ir/shaba"},
     "505416": {name: "بانک گردشگری", url: "https://www.tourism-bank.ir/shaba"},
-    "636949": {name: "بانک حکمت ایرانیان", url: "https://www.sepahbank.ir/"}
+    "636733": {name: "موسسه اعتباری ملل", url: "https://www.melalbank.ir/shaba"},
+    "504172": {name: "بانک رسالت", url: "https://www.rqb.ir/shaba"},
+    "627669": {name: "پست بانک ایران", url: "https://www.postbank.ir/shaba"},
+    "639599": {name: "بانک شهر", url: "https://shahr-bank.ir/shaba"},
+    "504706": {name: "بانک شهر", url: "https://shahr-bank.ir/shaba"},
+    "628157": {name: "بانک شهر", url: "https://shahr-bank.ir/shaba"},
+    "636949": {name: "بانک حکمت ایرانیان", url: "https://www.sepahbank.ir/"},
+    "504294": {name: "موسسه اعتباری کوثر", url: "https://www.sepahbank.ir/"},
+    "639547": {name: "بانک گردشگری", url: "https://www.tourism-bank.ir/shaba"}
   };
 
   function formatNumber(input) {
@@ -93,10 +114,15 @@
     let type = document.getElementById('transferType').value;
     let resDiv = document.getElementById('feeResult');
 
-    if (type === 'card' && amt > 150000000) resDiv.innerHTML = "خطا: سقف کارت‌به‌کارت ۱۵۰ میلیون است.";
-    else if (type === 'paya' && amt > 2000000000) resDiv.innerHTML = "خطا: سقف پایا ۲ میلیارد است.";
-    else if (type === 'satna' && amt < 1000000000) resDiv.innerHTML = "خطا: حداقل مبلغ ساتنا ۱ میلیارد است.";
-    else if (type === 'pol' && amt > 1000000000) resDiv.innerHTML = "خطا: سقف پل ۱ میلیارد است.";
+    if (isNaN(amt)) {
+      resDiv.innerHTML = "لطفاً مبلغ را وارد کنید.";
+      return;
+    }
+
+    if (type === 'card' && amt > 150000000) resDiv.innerHTML = "خطا: سقف کارت‌به‌کارت ۱۵۰ میلیون ریال است.";
+    else if (type === 'paya' && amt > 2000000000) resDiv.innerHTML = "خطا: سقف پایا ۲ میلیارد ریال است.";
+    else if (type === 'satna' && amt < 1000000000) resDiv.innerHTML = "خطا: حداقل مبلغ ساتنا ۱ میلیارد ریال است.";
+    else if (type === 'pol' && amt > 1000000000) resDiv.innerHTML = "خطا: سقف پل ۱ میلیارد ریال است.";
     else {
       let fee = 0;
       if (type === 'card') fee = (amt <= 100000000 ? 9000 : 12200);
@@ -111,7 +137,7 @@
     let bin = document.getElementById('binInput').value;
     let res = BANKS[bin];
     document.getElementById('bankResult').innerHTML = res ? 
-      `بانک: ${res.name} <br> <a href="${res.url}" target="_blank">دریافت شبا (سایت بانک)</a>` : "بانک مورد نظر در لیست یافت نشد.";
+      `بانک: ${res.name} <br> <a href="${res.url}" target="_blank">لینک تبدیل کارت به شبا</a>` : "بانک مورد نظر با این پیش‌شماره یافت نشد.";
   }
 
   function showPspPhone() {
