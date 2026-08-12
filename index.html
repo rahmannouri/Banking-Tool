@@ -1,278 +1,108 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ابزار جامع بانکی و محاسباتی</title>
-<link rel="icon" href="images.jpg">
-<link rel="apple-touch-icon" href="images.jpg">
-<style>
-  :root{ --teal:#0E6B57; --teal-dark:#09483a; --paper:#F4F4F9; --radius:14px; }
-  body{ font-family: Tahoma, sans-serif; background:var(--paper); padding:20px; color:#333; margin:0; }
-  .wrap{ max-width:700px; margin:0 auto; background:white; padding:20px; border-radius:var(--radius); box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-  h1 { text-align: center; color: var(--teal); font-size: 1.5rem; margin-bottom: 20px; }
-  .tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-  .tab-btn { flex: 1; padding: 10px 5px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-family: Tahoma, sans-serif; font-size: 0.85rem; font-weight: bold; transition: 0.3s; text-align: center; }
-  .tab-btn.active { background: var(--teal); color: white; }
-  .section { display: none; }
-  .section.active { display: block; }
-  label { display: block; margin-top: 10px; font-size: 0.9rem; font-weight: bold; color: #555; }
-  input, select, button{ width:100%; padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:8px; box-sizing:border-box; font-family: Tahoma, sans-serif; }
-  button{ background:var(--teal); color:white; font-weight:bold; cursor:pointer; transition: 0.3s; }
-  button:hover { background: var(--teal-dark); }
-  .result{ margin-top:15px; padding:12px; background:#eef; border-radius:8px; color:#333; font-size: 0.95rem; line-height: 1.6; }
-  .row { display: flex; gap: 10px; }
-  .row > div { flex: 1; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ابزار جامع بانکی و مالی</title>
+    <style>
+        :root { --teal: #0E6B57; --paper: #F4F4F9; }
+        body { font-family: Tahoma, sans-serif; background: var(--paper); padding: 15px; color: #333; margin: 0; }
+        .wrap { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--teal); font-size: 1.2rem; }
+        label { font-size: 0.85rem; font-weight: bold; margin-top: 10px; display: block; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: Tahoma; }
+        button { background: var(--teal); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .result { margin-top: 15px; padding: 15px; background: #eef; border-radius: 8px; font-size: 0.9rem; line-height: 1.8; }
+    </style>
 </head>
 <body>
 
 <div class="wrap">
-  <h1>ابزار جامع بانکی و محاسباتی</h1>
-  
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab(0)">اقساط وام</button>
-    <button class="tab-btn" onclick="switchTab(1)">سود سپرده</button>
-    <button class="tab-btn" onclick="switchTab(2)">محاسبه سن</button>
-    <button class="tab-btn" onclick="switchTab(3)">فاصله دو تاریخ</button>
-  </div>
+    <h1>ابزار جامع بانکی</h1>
 
-  <!-- بخش اول: محاسبه اقساط وام -->
-  <div class="section active">
-    <h3>محاسبه اقساط انواع وام</h3>
-    <label>مبلغ وام (تومان):</label>
-    <input type="number" id="loanAmount" placeholder="مثلاً 100000000">
-    
-    <div class="row">
-      <div>
-        <label>نرخ سود سالانه (%):</label>
-        <input type="number" id="loanRate" placeholder="مثلاً 23" value="23">
-      </div>
-      <div>
-        <label>مدت بازپرداخت (ماه):</label>
-        <input type="number" id="loanMonths" placeholder="مثلاً 36" value="36">
-      </div>
+    <!-- تشخیص بانک -->
+    <label>تشخیص بانک (۶ رقم اول کارت):</label>
+    <input type="text" id="binCard" maxlength="6" placeholder="۶ رقم اول کارت" oninput="checkBank()">
+    <div id="bankResult" style="color:var(--teal); font-weight:bold; font-size: 0.9rem;"></div>
+
+    <hr>
+
+    <!-- محاسبات وام -->
+    <label>نوع وام:</label>
+    <select id="loanType" onchange="toggleLoanFields()">
+        <option value="install">وام اقساطی</option>
+        <option value="lump">وام یکجا پرداخت</option>
+        <option value="qarz">وام قرض‌الحسنه</option>
+    </select>
+    <input type="text" id="loanAmount" placeholder="مبلغ وام (تومان)" oninput="formatNumber(this)">
+    <div id="extraFields">
+        <input type="number" id="loanMonths" placeholder="تعداد اقساط / مدت (ماه)">
     </div>
-    
-    <button onclick="calculateLoan()">محاسبه قسط</button>
-    <div class="result" id="loanResult" style="display:none;"></div>
-  </div>
+    <button onclick="calculateLoan()">محاسبه وام</button>
+    <div id="loanResult" class="result" style="display:none;"></div>
 
-  <!-- بخش دوم: محاسبه سود سپرده -->
-  <div class="section">
-    <h3>محاسبه سود سپرده‌ها</h3>
+    <hr>
+
+    <!-- سود سپرده -->
     <label>مبلغ سپرده (تومان):</label>
-    <input type="number" id="depAmount" placeholder="مثلاً 50000000">
-    
-    <div class="row">
-      <div>
-        <label>نرخ سود سالانه (%):</label>
-        <input type="number" id="depRate" placeholder="مثلاً 20.5" value="20.5">
-      </div>
-      <div>
-        <label>نوع محاسبه دوره:</label>
-        <select id="depType">
-          <option value="daily">روزانه (تعداد روز دلخواه)</option>
-          <option value="29">ماه ۲۹ روزه</option>
-          <option value="30">ماه ۳۰ روزه</option>
-          <option value="31">ماه ۳۱ روزه</option>
-        </select>
-      </div>
-    </div>
-
-    <div id="daysRow">
-      <label>تعداد روز (مخصوص حالت روزانه):</label>
-      <input type="number" id="depDays" value="30">
-    </div>
-    
-    <button onclick="calculateDeposit()">محاسبه سود</button>
-    <div class="result" id="depResult" style="display:none;"></div>
-  </div>
-
-  <!-- بخش سوم: محاسبه سن -->
-  <div class="section">
-    <h3>محاسبه سن (تاریخ تولد تا امروز)</h3>
-    <div class="row">
-      <div>
-        <label>سال تولد (شمسی):</label>
-        <input type="number" id="birthYear" placeholder="1370">
-      </div>
-      <div>
-        <label>ماه تولد:</label>
-        <select id="birthMonth">
-          <option value="1">فروردین</option><option value="2">اردیبهشت</option><option value="3">خرداد</option>
-          <option value="4">تیر</option><option value="5">مرداد</option><option value="6">شهریور</option>
-          <option value="7">مهر</option><option value="8">آبان</option><option value="9">آذر</option>
-          <option value="10">دی</option><option value="11">بهمن</option><option value="12">اسفند</option>
-        </select>
-      </div>
-      <div>
-        <label>روز تولد:</label>
-        <input type="number" id="birthDay" placeholder="1" min="1" max="31">
-      </div>
-    </div>
-    <button onclick="calculateAge()">محاسبه سن دقیق</button>
-    <div class="result" id="ageResult" style="display:none;"></div>
-  </div>
-
-  <!-- بخش چهارم: فاصله دو تاریخ هجری شمسی -->
-  <div class="section">
-    <h3>محاسبه فاصله دو تاریخ هجری شمسی</h3>
-    <label>تاریخ شروع:</label>
-    <div class="row">
-      <input type="number" id="startY" placeholder="سال (1402)">
-      <input type="number" id="startM" placeholder="ماه (1-12)">
-      <input type="number" id="startD" placeholder="روز (1-31)">
-    </div>
-    
-    <label>تاریخ پایان:</label>
-    <div class="row">
-      <input type="number" id="endY" placeholder="سال (1405)">
-      <input type="number" id="endM" placeholder="ماه (1-12)">
-      <input type="number" id="endD" placeholder="روز (1-31)">
-    </div>
-
-    <button onclick="calculateDateDiff()">محاسبه فاصله</button>
-    <div class="result" id="diffResult" style="display:none;"></div>
-  </div>
-
+    <input type="text" id="depAmount" placeholder="مبلغ سپرده" oninput="formatNumber(this)">
+    <label>نرخ سود سالانه (%):</label>
+    <input type="number" id="depRate" value="20">
+    <button onclick="calculateDeposit()">محاسبه سود سپرده</button>
+    <div id="depResult" class="result" style="display:none;"></div>
 </div>
 
 <script>
-  function switchTab(index) {
-    const buttons = document.querySelectorAll('.tab-btn');
-    const sections = document.querySelectorAll('.section');
-    buttons.forEach((btn, i) => {
-      btn.classList.toggle('active', i === index);
-      sections[i].classList.toggle('active', i === index);
-    });
-  }
-
-  // تب اول: وام
-  function calculateLoan() {
-    const P = parseFloat(document.getElementById('loanAmount').value);
-    const annualRate = parseFloat(document.getElementById('loanRate').value);
-    const n = parseInt(document.getElementById('loanMonths').value);
-    const resDiv = document.getElementById('loanResult');
-
-    if (!P || !annualRate || !n) {
-      alert('لطفاً همه مقادیر وام را به درستی وارد کنید.');
-      return;
+    function formatNumber(input) {
+        let val = input.value.replace(/,/g, '');
+        if (!isNaN(val) && val !== "") {
+            input.value = Number(val).toLocaleString('fa-IR');
+        }
     }
 
-    const r = annualRate / 100 / 12;
-    const payment = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-    const totalPayment = payment * n;
-    const totalInterest = totalPayment - P;
-
-    resDiv.style.display = 'block';
-    resDiv.innerHTML = `
-      <b>مبلغ قسط ماهانه:</b> ${Math.round(payment).toLocaleString()} تومان<br>
-      <b>کل سود بازپرداخت:</b> ${Math.round(totalInterest).toLocaleString()} تومان<br>
-      <b>مجموع بازپرداخت کل:</b> ${Math.round(totalPayment).toLocaleString()} تومان
-    `;
-  }
-
-  // تب دوم: سپرده
-  function calculateDeposit() {
-    const P = parseFloat(document.getElementById('depAmount').value);
-    const annualRate = parseFloat(document.getElementById('depRate').value);
-    const type = document.getElementById('depType').value;
-    const resDiv = document.getElementById('depResult');
-
-    if (!P || !annualRate) {
-      alert('لطفاً مبلغ و نرخ سود را وارد کنید.');
-      return;
+    function checkBank() {
+        const bin = document.getElementById('binCard').value;
+        const banks = { "603799": "بانک ملی", "589210": "بانک سپه", "627381": "بانک انصار", "627412": "بانک اقتصاد نوین" };
+        document.getElementById('bankResult').innerText = banks[bin] || (bin.length === 6 ? "بانک نامشخص" : "");
     }
 
-    let days = 30;
-    if (type === 'daily') {
-      days = parseInt(document.getElementById('depDays').value) || 0;
-    } else if (type === '29') {
-      days = 29;
-    } else if (type === '30') {
-      days = 30;
-    } else if (type === '31') {
-      days = 31;
+    function toggleLoanFields() {
+        const type = document.getElementById('loanType').value;
+        document.getElementById('extraFields').style.display = (type === 'lump') ? 'none' : 'block';
     }
 
-    const interest = (P * (annualRate / 100) * days) / 365;
+    function calculateLoan() {
+        const p = parseInt(document.getElementById('loanAmount').value.replace(/,/g, ''));
+        const type = document.getElementById('loanType').value;
+        const n = parseInt(document.getElementById('loanMonths').value);
+        let res = "";
 
-    resDiv.style.display = 'block';
-    resDiv.innerHTML = `
-      <b>مدت زمان محاسبه:</b> ${days} روز<br>
-      <b>سود متعلقه:</b> ${Math.round(interest).toLocaleString()} تومان
-    `;
-  }
-
-  // تب سوم: سن
-  function calculateAge() {
-    const y = parseInt(document.getElementById('birthYear').value);
-    const m = parseInt(document.getElementById('birthMonth').value);
-    const d = parseInt(document.getElementById('birthDay').value);
-    const resDiv = document.getElementById('ageResult');
-
-    if (!y || !m || !d) {
-      alert('لطفاً تاریخ تولد را کامل وارد کنید.');
-      return;
+        if (type === 'qarz') {
+            const fee = p * 0.04; // کارمزد 4 درصد ساده
+            res = `کارمزد (۴٪): ${Math.round(fee).toLocaleString()} تومان<br>قسط ماهانه: ${Math.round((p+fee)/n).toLocaleString()} تومان`;
+        } else if (type === 'install') {
+            res = `قسط ماهانه: ${Math.round((p * 1.23) / n).toLocaleString()} تومان`;
+        } else {
+            res = "وام یکجا در پایان دوره سررسید می‌شود.";
+        }
+        
+        document.getElementById('loanResult').innerHTML = res;
+        document.getElementById('loanResult').style.display = 'block';
     }
 
-    // تقریب ساده و کاربردی شمسی نسبت به سال جاری شمسی (فرض ۱۴۰5)
-    const currentY = 1405;
-    const currentM = 5;
-    const currentD = 13;
-
-    let years = currentY - y;
-    let months = currentM - m;
-    let days = currentD - d;
-
-    if (days < 0) {
-      days += 30;
-      months -= 1;
+    function calculateDeposit() {
+        const p = parseInt(document.getElementById('depAmount').value.replace(/,/g, ''));
+        const r = parseFloat(document.getElementById('depRate').value) / 100;
+        
+        document.getElementById('depResult').innerHTML = `
+            سود روزانه: ${Math.round((p * r) / 365).toLocaleString()} ریال<br>
+            سود ماه ۲۹ روزه: ${Math.round((p * r * 29) / 365).toLocaleString()} ریال<br>
+            سود ماه ۳۰ روزه: ${Math.round((p * r * 30) / 365).toLocaleString()} ریال<br>
+            سود ماه ۳۱ روزه: ${Math.round((p * r * 31) / 365).toLocaleString()} ریال<br>
+            سود سالانه: ${Math.round(p * r).toLocaleString()} ریال
+        `;
+        document.getElementById('depResult').style.display = 'block';
     }
-    if (months < 0) {
-      months += 12;
-      years -= 1;
-    }
-
-    resDiv.style.display = 'block';
-    resDiv.innerHTML = `سن شما تقریباً برابر است با: <b>${years} سال و ${months} ماه و ${days} روز</b>`;
-  }
-
-  // تب چهارم: فاصله دو تاریخ
-  function calculateDateDiff() {
-    const sy = parseInt(document.getElementById('startY').value);
-    const sm = parseInt(document.getElementById('startM').value);
-    const sd = parseInt(document.getElementById('startD').value);
-    
-    const ey = parseInt(document.getElementById('endY').value);
-    const em = parseInt(document.getElementById('endM').value);
-    const ed = parseInt(document.getElementById('endD').value);
-    const resDiv = document.getElementById('diffResult');
-
-    if (!sy || !sm || !sd || !ey || !em || !ed) {
-      alert('لطفاً هر دو تاریخ را کامل وارد کنید.');
-      return;
-    }
-
-    // تقریب روزهای گذشته بر مبنای سال ۳۶۵ روزه و ماه ۳0 روزه
-    const startTotalDays = (sy * 365) + (sm * 30) + sd;
-    const endTotalDays = (ey * 365) + (em * 30) + ed;
-    let diffDays = endTotalDays - startTotalDays;
-
-    if (diffDays < 0) {
-      diffDays = Math.abs(diffDays);
-      resDiv.innerHTML = `تاریخ پایان باید بعد از تاریخ شروع باشد!`;
-    } else {
-      const diffYears = Math.floor(diffDays / 365);
-      const remDays = diffDays % 365;
-      const diffMonths = Math.floor(remDays / 30);
-      const finalDays = remDays % 30;
-
-      resDiv.innerHTML = `فاصله دو تاریخ: <b>تقریباً ${diffYears} سال، ${diffMonths} ماه و ${finalDays} روز</b> (معادل ${diffDays} روز کل)`;
-    }
-    resDiv.style.display = 'block';
-  }
 </script>
 </body>
 </html>
