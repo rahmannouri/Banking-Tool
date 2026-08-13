@@ -502,12 +502,16 @@
       for (let i = 1; i <= years; i++) {
         let yearlyFee = remainingPrincipal * 0.04;
         totalFee += yearlyFee;
-        out += `سال ${i}: کارمزد = ${Math.round(yearlyFee).toLocaleString()} ریال<br>`;
+        out += `سال ${i}: کارمزد (قسط اول سال) = ${Math.round(yearlyFee).toLocaleString()} ریال<br>`;
         remainingPrincipal -= (p / years);
       }
-      let monthlyInstallment = (p + totalFee) / duration;
+      // کارمزدها به عنوان اولین قسط هر سال هستند → تعداد اقساط اصل = کل اقساط منهای تعداد سال‌ها
+      let principalInstallments = duration - years;
+      if (principalInstallments <= 0) principalInstallments = duration;
+      let monthlyInstallment = p / principalInstallments;
       out += `<br><b>مجموع کارمزد کل:</b> ${Math.round(totalFee).toLocaleString()} ریال<br>`;
-      out += `<b>قسط ماهانه (اصل + کارمزد):</b> ${Math.round(monthlyInstallment).toLocaleString()} ریال`;
+      out += `<b>مبلغ هر قسط (اصل وام):</b> ${Math.round(monthlyInstallment).toLocaleString()} ریال<br>`;
+      out += `<small>توضیح: کارمزد هر سال به عنوان قسط اول آن سال دریافت می‌شود و اقساط باقی‌مانده فقط اصل وام هستند.</small>`;
       resHTML = out;
     } else if (type === 'lump') {
       let annualRate = parseFloat(document.getElementById('loanRate').value) || 0;
