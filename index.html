@@ -100,41 +100,91 @@
     opacity: 0.9;
   }
 
-  /* ---------- Tabs ---------- */
-  .tabs {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-bottom: 14px;
-  }
-  .tab-btn {
+  /* ---------- Side Menu ---------- */
+  .menu-btn {
+    position: absolute;
+    left: 14px;
+    top: 18px;
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 10px 4px 8px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-family: inherit;
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-align: center;
-    transition: 0.2s ease;
+    backdrop-filter: blur(4px);
   }
-  .tab-btn svg { width: 18px; height: 18px; stroke: var(--muted); transition: 0.2s ease; }
-  .tab-btn:hover { border-color: var(--blue-500); color: var(--navy-700); }
-  .tab-btn:hover svg { stroke: var(--navy-700); }
-  .tab-btn.active {
+  .menu-btn svg { width: 22px; height: 22px; stroke: #fff; }
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 30, 50, 0.45);
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.25s ease;
+  }
+  .drawer-overlay.open { opacity: 1; visibility: visible; }
+  .side-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(300px, 82vw);
+    height: 100%;
+    background: #fff;
+    z-index: 100;
+    transform: translateX(105%);
+    transition: transform 0.28s ease;
+    box-shadow: -8px 0 30px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .side-drawer.open { transform: translateX(0); }
+  .drawer-header {
     background: linear-gradient(155deg, var(--navy-900), var(--navy-700));
-    border-color: var(--navy-900);
     color: #fff;
-    box-shadow: 0 6px 14px -6px rgba(10,46,82,0.5);
+    padding: 22px 18px 18px;
   }
-  .tab-btn.active svg { stroke: #fff; }
+  .drawer-header h2 { margin: 0; font-size: 1rem; font-weight: 800; }
+  .drawer-header p { margin: 4px 0 0; font-size: 0.72rem; opacity: 0.8; }
+  .drawer-nav { padding: 10px 0; flex: 1; }
+  .drawer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 18px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: right;
+    transition: 0.15s ease;
+  }
+  .drawer-item svg { width: 20px; height: 20px; stroke: var(--muted); flex-shrink: 0; }
+  .drawer-item:hover, .drawer-item.active {
+    background: #eef5fc;
+    color: var(--navy-700);
+  }
+  .drawer-item.active svg { stroke: var(--navy-700); }
+  .drawer-item.danger { color: var(--rose-600); margin-top: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .drawer-item.danger svg { stroke: var(--rose-600); }
+  .drawer-footer {
+    padding: 14px 18px 20px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+  .brand-card { position: relative; }
 
   /* ---------- Panel ---------- */
   .panel {
@@ -250,6 +300,9 @@
 <div class="wrap">
 
   <div class="brand-card">
+    <button class="menu-btn" onclick="toggleDrawer()" aria-label="منو">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
     <div class="brand-row">
       <div class="brand-logo"><img src="data:image/png;base64,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" alt="لوگو"></div>
       <div class="brand-text">
@@ -260,45 +313,54 @@
     <div class="brand-stripe"></div>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab(0)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-      تشخیص بانک
-    </button>
-    <button class="tab-btn" onclick="switchTab(1)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg>
-      محاسبه وام
-    </button>
-    <button class="tab-btn" onclick="switchTab(2)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      سود سپرده
-    </button>
-    <button class="tab-btn" onclick="switchTab(3)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l-4 4 4 4"/><path d="M3 14h13"/><path d="M17 4l4 4-4 4"/><path d="M21 8H8"/></svg>
-      انتقال وجه
-    </button>
-    <button class="tab-btn" onclick="switchTab(4)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
-      تاریخ و سن
-    </button>
-    <button class="tab-btn" onclick="switchTab(5)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      پشتیبانی PSP
-    </button>
+  <!-- Side Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <h2>منوی ابزارها</h2>
+      <p>ابزار جامع بانکی و مالی</p>
+    </div>
+    <nav class="drawer-nav">
+      <button class="drawer-item active" onclick="switchTab(0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg>
+        محاسبه وام
+      </button>
+      <button class="drawer-item" onclick="switchTab(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        محاسبه سود سپرده
+      </button>
+      <button class="drawer-item" onclick="switchTab(2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l-4 4 4 4"/><path d="M3 14h13"/><path d="M17 4l4 4-4 4"/><path d="M21 8H8"/></svg>
+        محاسبه کارمزد انتقال وجه
+      </button>
+      <button class="drawer-item" onclick="switchTab(3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+        تاریخ و سن
+      </button>
+      <button class="drawer-item" onclick="switchTab(4)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        تشخیص بانک
+      </button>
+      <button class="drawer-item" onclick="switchTab(5)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        پشتیبانی PSP
+      </button>
+      <button class="drawer-item" onclick="switchTab(6)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        درباره برنامه
+      </button>
+      <button class="drawer-item danger" onclick="exitApp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        خروج
+      </button>
+    </nav>
+    <div class="drawer-footer">تهیه شده توسط عبدالرحمان نوری</div>
   </div>
 
   <div class="panel">
 
-    <!-- 1. تشخیص بانک -->
-    <div class="section active">
-      <h3>تشخیص نام بانک از ۶ رقم اول کارت</h3>
-      <label>۶ رقم اول شماره کارت:</label>
-      <input type="text" id="binInput" maxlength="6" placeholder="مثلاً 603799" oninput="findBank()">
-      <div class="result" id="bankResult" style="display:none;"></div>
-    </div>
-
     <!-- 2. محاسبه وام -->
-    <div class="section">
+    <div class="section active">
       <h3>محاسبه انواع وام (مبالغ به ریال)</h3>
       <label>نوع وام:</label>
       <select id="loanType" onchange="toggleLoanInputs()">
@@ -374,6 +436,14 @@
       <div class="result" id="dateResult" style="display:none;"></div>
     </div>
 
+    <!-- 1. تشخیص بانک -->
+    <div class="section">
+      <h3>تشخیص نام بانک از ۶ رقم اول کارت</h3>
+      <label>۶ رقم اول شماره کارت:</label>
+      <input type="text" id="binInput" maxlength="6" placeholder="مثلاً 603799" oninput="findBank()">
+      <div class="result" id="bankResult" style="display:none;"></div>
+    </div>
+
     <!-- 6. پشتیبانی PSPها -->
     <div class="section">
       <h3>شماره تماس پشتیبانی شرکت‌های PSP</h3>
@@ -393,19 +463,58 @@
       </ul>
     </div>
 
+    <!-- 7. درباره برنامه -->
+    <div class="section">
+      <h3>درباره برنامه</h3>
+      <div style="line-height:1.9; font-size:0.9rem; color:var(--ink);">
+        <p style="margin:0 0 12px;"><b>ابزار جامع بانکی، مالی و محاسباتی</b></p>
+        <p style="margin:0 0 8px;">تهیه شده توسط: <b>عبدالرحمان نوری</b></p>
+        <p style="margin:0 0 6px;">راه‌های ارتباطی:</p>
+        <p style="margin:0 0 4px;">📧 ایمیل: <a href="mailto:rahmannouri@gmail.com" style="color:var(--blue-500);">rahmannouri@gmail.com</a></p>
+        <p style="margin:0 0 14px;">💬 روبیکا: <b dir="ltr">@RahmanNouri</b></p>
+        <p style="margin:0; font-size:0.8rem; color:var(--muted);">نسخه وب‌ویو — تمامی محاسبات به‌صورت آفلاین انجام می‌شود.</p>
+      </div>
+    </div>
+
   </div>
 
   <footer class="note">تهیه شده توسط عبدالرحمان نوری</footer>
 </div>
 
 <script>
+  function toggleDrawer() {
+    document.getElementById('sideDrawer').classList.toggle('open');
+    document.getElementById('drawerOverlay').classList.toggle('open');
+  }
+  function closeDrawer() {
+    document.getElementById('sideDrawer').classList.remove('open');
+    document.getElementById('drawerOverlay').classList.remove('open');
+  }
   function switchTab(index) {
-    const buttons = document.querySelectorAll('.tab-btn');
+    const items = document.querySelectorAll('.drawer-item:not(.danger)');
     const sections = document.querySelectorAll('.section');
-    buttons.forEach((btn, i) => {
+    items.forEach((btn, i) => {
       btn.classList.toggle('active', i === index);
-      sections[i].classList.toggle('active', i === index);
     });
+    sections.forEach((sec, i) => {
+      sec.classList.toggle('active', i === index);
+    });
+    closeDrawer();
+  }
+  function exitApp() {
+    closeDrawer();
+    try {
+      if (typeof Android !== 'undefined' && Android.exitApp) { Android.exitApp(); return; }
+      if (typeof Android !== 'undefined' && Android.closeApp) { Android.closeApp(); return; }
+      if (window.AndroidBridge && window.AndroidBridge.exit) { window.AndroidBridge.exit(); return; }
+      if (navigator.app && navigator.app.exitApp) { navigator.app.exitApp(); return; }
+    } catch(e) {}
+    // fallback
+    if (confirm('آیا می‌خواهید از برنامه خارج شوید؟')) {
+      window.close();
+      // some WebView wrappers respond to history back
+      history.back();
+    }
   }
 
   function formatInput(input) {
@@ -488,7 +597,8 @@
       let payment = r > 0 ? (p * r * Math.pow(1 + r, duration)) / (Math.pow(1 + r, duration) - 1) : p / duration;
       let totalPay = payment * duration;
       let totalInterest = totalPay - p;
-      resHTML = `فاصله هر قسط: <b>${intervalMonthCountText(intervalMonths)}</b><br>` +
+      resHTML = `اصل مبلغ وام: <b>${Math.round(p).toLocaleString()} ریال</b><br>` +
+                `فاصله هر قسط: <b>${intervalMonthCountText(intervalMonths)}</b><br>` +
                 `مبلغ هر قسط: <b>${Math.round(payment).toLocaleString()} ریال</b><br>` +
                 `کل سود وام: ${Math.round(totalInterest).toLocaleString()} ریال<br>` +
                 `مجموع بازپرداخت: ${Math.round(totalPay).toLocaleString()} ریال`;
@@ -505,19 +615,21 @@
         out += `سال ${i}: کارمزد (قسط اول سال) = ${Math.round(yearlyFee).toLocaleString()} ریال<br>`;
         remainingPrincipal -= (p / years);
       }
-      // کارمزدها به عنوان اولین قسط هر سال هستند → تعداد اقساط اصل = کل اقساط منهای تعداد سال‌ها
+      // کارمزدها اولین قسط هر سال هستند: کارمزد از اصل کم می‌شود و باقیمانده تقسیم بر ماه‌های باقی‌مانده
       let principalInstallments = duration - years;
       if (principalInstallments <= 0) principalInstallments = duration;
-      let monthlyInstallment = p / principalInstallments;
-      out += `<br><b>مجموع کارمزد کل:</b> ${Math.round(totalFee).toLocaleString()} ریال<br>`;
-      out += `<b>مبلغ هر قسط (اصل وام):</b> ${Math.round(monthlyInstallment).toLocaleString()} ریال<br>`;
-      out += `<small>توضیح: کارمزد هر سال به عنوان قسط اول آن سال دریافت می‌شود و اقساط باقی‌مانده فقط اصل وام هستند.</small>`;
+      let monthlyInstallment = (p - totalFee) / principalInstallments;
+      out += `<br><b>اصل مبلغ وام:</b> ${Math.round(p).toLocaleString()} ریال<br>`;
+      out += `<b>مجموع کارمزد کل:</b> ${Math.round(totalFee).toLocaleString()} ریال<br>`;
+      out += `<b>مبلغ هر قسط (پس از کسر کارمزد):</b> ${Math.round(monthlyInstallment).toLocaleString()} ریال<br>`;
+      out += `<small>توضیح: کارمزد هر سال به عنوان قسط اول آن سال است. مبلغ کارمزدها از اصل وام کسر و باقیمانده بر تعداد اقساط باقی‌مانده تقسیم می‌شود.</small>`;
       resHTML = out;
     } else if (type === 'lump') {
       let annualRate = parseFloat(document.getElementById('loanRate').value) || 0;
       let interest = (p * (annualRate / 100) * duration) / 365;
       let total = p + interest;
-      resHTML = `مدت وام: ${duration} روز<br>` +
+      resHTML = `اصل مبلغ وام: <b>${Math.round(p).toLocaleString()} ریال</b><br>` +
+                `مدت وام: ${duration} روز<br>` +
                 `سود متعلقه یکجا: <b>${Math.round(interest).toLocaleString()} ریال</b><br>` +
                 `مجموع بازپرداخت در سررسید: <b>${Math.round(total).toLocaleString()} ریال</b>`;
     }
