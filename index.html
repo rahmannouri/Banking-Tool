@@ -293,6 +293,91 @@
     color: #97a4b3;
     margin-top: 16px;
   }
+
+/* کارت‌های بخش درباره برنامه */
+.about-box{
+  line-height:1.9;
+  font-size:.9rem;
+  color:var(--ink);
+}
+.about-title{
+  margin:0 0 8px;
+  font-weight:800;
+}
+.about-line{
+  margin:0 0 9px;
+}
+.version-badge{
+  display:inline-block;
+  padding:5px 11px;
+  margin:0 0 14px;
+  border-radius:12px;
+  background:rgba(37,99,235,.08);
+  color:var(--blue-500);
+  font-size:.82rem;
+}
+.contact-title{
+  margin:0 0 8px;
+  font-weight:700;
+}
+.contact-card{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  width:100%;
+  box-sizing:border-box;
+  margin:0 0 9px;
+  padding:10px 12px;
+  border:1px solid rgba(100,116,139,.18);
+  border-radius:14px;
+  background:rgba(255,255,255,.72);
+  color:var(--ink);
+  text-decoration:none;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.contact-card:active{
+  transform:scale(.985);
+}
+.contact-icon{
+  flex:0 0 38px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+}
+.contact-icon svg{
+  width:22px;
+  height:22px;
+}
+.email-icon{
+  background:rgba(37,99,235,.10);
+  color:var(--blue-500);
+}
+.rubika-icon{
+  background:rgba(124,58,237,.10);
+  color:#7c3aed;
+}
+.contact-text{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+}
+.contact-text small{
+  color:var(--muted);
+  font-size:.75rem;
+}
+.contact-text b{
+  font-size:.84rem;
+  overflow-wrap:anywhere;
+}
+.about-note{
+  margin:11px 0 0;
+  font-size:.78rem;
+  color:var(--muted);
+}
+
 </style>
 </head>
 <body>
@@ -466,13 +551,41 @@
     <!-- 7. درباره برنامه -->
     <div class="section">
       <h3>درباره برنامه</h3>
-      <div style="line-height:1.9; font-size:0.9rem; color:var(--ink);">
-        <p style="margin:0 0 12px;"><b>ابزار جامع بانکی، مالی و محاسباتی</b></p>
-        <p style="margin:0 0 8px;">تهیه شده توسط: <b>عبدالرحمان نوری</b></p>
-        <p style="margin:0 0 6px;">راه‌های ارتباطی:</p>
-        <p style="margin:0 0 4px;">📧 ایمیل: <a href="mailto:rahmannouri@gmail.com" style="color:var(--blue-500);">rahmannouri@gmail.com</a></p>
-        <p style="margin:0 0 14px;">💬 روبیکا: <b dir="ltr">@RahmanNouri</b></p>
-        <p style="margin:0; font-size:0.8rem; color:var(--muted);">نسخه وب‌ویو — تمامی محاسبات به‌صورت آفلاین انجام می‌شود.</p>
+
+      <div class="about-box">
+        <p class="about-title">ابزار جامع بانکی، مالی و محاسباتی</p>
+        <p class="about-line">تهیه شده توسط: <b>عبدالرحمان نوری</b></p>
+        <div class="version-badge">نسخه برنامه: <b>2.2</b></div>
+
+        <p class="contact-title">راه‌های ارتباطی</p>
+
+        <a class="contact-card" href="mailto:rahmannouri@gmail.com">
+          <span class="contact-icon email-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+              <path d="m3 7 9 6 9-6"></path>
+            </svg>
+          </span>
+          <span class="contact-text">
+            <small>ایمیل</small>
+            <b dir="ltr">rahmannouri@gmail.com</b>
+          </span>
+        </a>
+
+        <a class="contact-card" href="https://rubika.ir/RahmanNouri" target="_blank" rel="noopener">
+          <span class="contact-icon rubika-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 3h10a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4h-5l-4 3v-3H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Z"></path>
+              <path d="M8 9h.01M12 9h.01M16 9h.01"></path>
+            </svg>
+          </span>
+          <span class="contact-text">
+            <small>روبیکا</small>
+            <b dir="ltr">@RahmanNouri</b>
+          </span>
+        </a>
+
+        <p class="about-note">نسخه وب‌ویو — تمامی محاسبات به‌صورت آفلاین انجام می‌شود.</p>
       </div>
     </div>
 
@@ -624,13 +737,15 @@
         remainingPrincipal -= (p / years);
       }
       // کارمزدها اولین قسط هر سال هستند: کارمزد از اصل کم می‌شود و باقیمانده تقسیم بر ماه‌های باقی‌مانده
+      // هر سال یک قسط به کارمزد اختصاص دارد؛ بنابراین اصل وام
+      // در بقیه اقساط مساوی تقسیم می‌شود و کارمزد جداگانه محاسبه می‌گردد.
       let principalInstallments = duration - years;
       if (principalInstallments <= 0) principalInstallments = duration;
-      let monthlyInstallment = (p - totalFee) / principalInstallments;
+      let monthlyInstallment = p / principalInstallments;
       out += `<br><b>اصل مبلغ وام:</b> ${Math.round(p).toLocaleString()} ریال<br>`;
       out += `<b>مجموع کارمزد کل:</b> ${Math.round(totalFee).toLocaleString()} ریال<br>`;
       out += `<b>مبلغ هر قسط (پس از کسر کارمزد):</b> ${Math.round(monthlyInstallment).toLocaleString()} ریال<br>`;
-      out += `<small>توضیح: کارمزد هر سال به عنوان قسط اول آن سال است. مبلغ کارمزدها از اصل وام کسر و باقیمانده بر تعداد اقساط باقی‌مانده تقسیم می‌شود.</small>`;
+      out += `<small>توضیح: کارمزد هر سال به عنوان قسط اول آن سال محاسبه می‌شود و اصل وام در سایر اقساط به‌صورت مساوی تقسیم می‌گردد.</small>`;
       resHTML = out;
     } else if (type === 'lump') {
       let annualRate = parseFloat(document.getElementById('loanRate').value) || 0;
