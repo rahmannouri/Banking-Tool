@@ -370,7 +370,7 @@
       </select>
 
       <label>مبلغ وام (ریال):</label>
-      <input type="text" id="loanAmount" value="0" placeholder="مثلاً 1,000,000,000" oninput="formatInput(this)">
+      <input type="text" id="loanAmount" value="" placeholder="مثلاً 1,000,000,000" oninput="formatInput(this)">
 
       <div class="row-group">
         <div>
@@ -396,7 +396,7 @@
     <div class="section">
       <h3>محاسبه سود سپرده (بر حسب ریال)</h3>
       <label>مبلغ سپرده (ریال):</label>
-      <input type="text" id="depAmount" value="0" placeholder="مثلاً 500,000,000" oninput="formatInput(this)">
+      <input type="text" id="depAmount" value="" placeholder="مثلاً 500,000,000" oninput="formatInput(this)">
 
       <label>نرخ سود سالانه (%):</label>
       <input type="number" id="depRate" placeholder="مثلاً 20.5">
@@ -417,7 +417,7 @@
       </select>
 
       <label>مبلغ انتقال (ریال):</label>
-      <input type="text" id="transferAmount" value="0" placeholder="مثلاً 50,000,000" oninput="formatInput(this)">
+      <input type="text" id="transferAmount" value="" placeholder="مثلاً 50,000,000" oninput="formatInput(this)">
 
       <button class="action-btn" onclick="calculateTransferFee()">محاسبه کارمزد</button>
       <div class="result" id="transferResult" style="display:none;"></div>
@@ -562,6 +562,12 @@
     let durationLabel = document.getElementById('durationLabel');
     let rateContainer = document.getElementById('rateContainer');
     let intervalContainer = document.getElementById('intervalContainer');
+    let loanResult = document.getElementById('loanResult');
+
+    // پاک کردن مدت و نتیجه هنگام تغییر نوع وام
+    document.getElementById('loanDuration').value = '';
+    loanResult.style.display = 'none';
+    loanResult.innerHTML = '';
 
     if (type === 'lump') {
       durationLabel.innerText = "مدت وام (روز):";
@@ -598,7 +604,9 @@
       let totalPay = payment * duration;
       let totalInterest = totalPay - p;
       resHTML = `اصل مبلغ وام: <b>${Math.round(p).toLocaleString()} ریال</b><br>` +
+                `تعداد اقساط: <b>${duration}</b><br>` +
                 `فاصله هر قسط: <b>${intervalMonthCountText(intervalMonths)}</b><br>` +
+                `نرخ سود سالانه: <b>${annualRate}٪</b><br>` +
                 `مبلغ هر قسط: <b>${Math.round(payment).toLocaleString()} ریال</b><br>` +
                 `کل سود وام: ${Math.round(totalInterest).toLocaleString()} ریال<br>` +
                 `مجموع بازپرداخت: ${Math.round(totalPay).toLocaleString()} ریال`;
@@ -629,7 +637,8 @@
       let interest = (p * (annualRate / 100) * duration) / 365;
       let total = p + interest;
       resHTML = `اصل مبلغ وام: <b>${Math.round(p).toLocaleString()} ریال</b><br>` +
-                `مدت وام: ${duration} روز<br>` +
+                `مدت وام: <b>${duration} روز</b><br>` +
+                `نرخ سود سالانه: <b>${annualRate}٪</b><br>` +
                 `سود متعلقه یکجا: <b>${Math.round(interest).toLocaleString()} ریال</b><br>` +
                 `مجموع بازپرداخت در سررسید: <b>${Math.round(total).toLocaleString()} ریال</b>`;
     }
@@ -665,6 +674,8 @@
     resDiv.style.display = 'block';
     resDiv.className = 'result success';
     resDiv.innerHTML = `
+      اصل مبلغ سپرده: <b>${Math.round(pRial).toLocaleString()} ریال</b><br>
+      نرخ سود سالانه: <b>${annualRate}٪</b><br>
       سود روزانه: <b>${Math.round(dailyRial).toLocaleString()} ریال</b><br>
       سود ماه ۲۹ روزه: <b>${Math.round(m29Rial).toLocaleString()} ریال</b><br>
       سود ماه ۳۰ روزه: <b>${Math.round(m30Rial).toLocaleString()} ریال</b><br>
