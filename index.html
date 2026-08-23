@@ -595,6 +595,13 @@
 </div>
 
 <script>
+  /* ===== مدیریت دکمه بک در وب (WebView / WebIntoApp) ===== */
+  var backTrapReady = false;
+
+  function isDrawerOpen() {
+    var d = document.getElementById('sideDrawer');
+    return !!(d && d.classList.contains('open'));
+  }
   function toggleDrawer() {
     document.getElementById('sideDrawer').classList.toggle('open');
     document.getElementById('drawerOverlay').classList.toggle('open');
@@ -602,6 +609,13 @@
   function closeDrawer() {
     document.getElementById('sideDrawer').classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('open');
+  }
+  function getActiveTabIndex() {
+    var sections = document.querySelectorAll('.section');
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].classList.contains('active')) return i;
+    }
+    return 0;
   }
   function switchTab(index) {
     const items = document.querySelectorAll('.drawer-item:not(.danger)');
@@ -613,22 +627,83 @@
       sec.classList.toggle('active', i === index);
     });
     closeDrawer();
+    try { window.scrollTo(0, 0); } catch (e) {}
   }
+
+  function keepBackTrap() {
+    try {
+      history.pushState({ appBackTrap: 1 }, '', location.href);
+      backTrapReady = true;
+    } catch (e) {}
+  }
+
+  function callNativeExit() {
+    try { if (window.Android && typeof Android.exitApp === 'function') { Android.exitApp(); return true; } } catch (e) {}
+    try { if (window.Android && typeof Android.closeApp === 'function') { Android.closeApp(); return true; } } catch (e) {}
+    try { if (window.Android && typeof Android.finish === 'function') { Android.finish(); return true; } } catch (e) {}
+    try { if (window.AndroidInterface && AndroidInterface.exitApp) { AndroidInterface.exitApp(); return true; } } catch (e) {}
+    try { if (window.AndroidBridge && AndroidBridge.exit) { AndroidBridge.exit(); return true; } } catch (e) {}
+    try { if (window.JSBridge && JSBridge.exitApp) { JSBridge.exitApp(); return true; } } catch (e) {}
+    try { if (navigator.app && navigator.app.exitApp) { navigator.app.exitApp(); return true; } } catch (e) {}
+    try { if (navigator.device && navigator.device.exitApp) { navigator.device.exitApp(); return true; } } catch (e) {}
+    try { window.close(); } catch (e) {}
+    try {
+      window.location.href = 'intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';
+      return true;
+    } catch (e) {}
+    return false;
+  }
+
   function exitApp() {
     closeDrawer();
-    try {
-      if (typeof Android !== 'undefined' && Android.exitApp) { Android.exitApp(); return; }
-      if (typeof Android !== 'undefined' && Android.closeApp) { Android.closeApp(); return; }
-      if (window.AndroidBridge && window.AndroidBridge.exit) { window.AndroidBridge.exit(); return; }
-      if (navigator.app && navigator.app.exitApp) { navigator.app.exitApp(); return; }
-    } catch(e) {}
-    // fallback
-    if (confirm('آیا می‌خواهید از برنامه خارج شوید؟')) {
-      window.close();
-      // some WebView wrappers respond to history back
-      history.back();
-    }
+    var ok = true;
+    try { ok = confirm('آیا می‌خواهید از برنامه خارج شوید؟'); } catch (e) { ok = true; }
+    if (!ok) { keepBackTrap(); return; }
+    callNativeExit();
   }
+
+  /* true = بک در وب مصرف شد (منو/تب). false = باید از اپ خارج شود */
+  function handleNativeBack() {
+    if (isDrawerOpen()) {
+      closeDrawer();
+      keepBackTrap();
+      return true;
+    }
+    if (getActiveTabIndex() !== 0) {
+      switchTab(0);
+      keepBackTrap();
+      return true;
+    }
+    return false;
+  }
+
+  function onHardwareBack() {
+    if (handleNativeBack()) return;
+    var ok = true;
+    try { ok = confirm('آیا می‌خواهید از برنامه خارج شوید؟'); } catch (e) { ok = true; }
+    if (!ok) { keepBackTrap(); return; }
+    callNativeExit();
+  }
+
+  function setupHardwareBack() {
+    keepBackTrap();
+    window.addEventListener('popstate', function () {
+      // WebView با دکمه بک گوشی goBack می‌زند → popstate اینجا می‌آید
+      onHardwareBack();
+    });
+    document.addEventListener('backbutton', function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      onHardwareBack();
+    }, false);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupHardwareBack);
+  } else {
+    setupHardwareBack();
+  }
+  window.handleNativeBack = handleNativeBack;
+  window.exitApp = exitApp;
 
   function formatInput(input) {
     let cleanVal = input.value.replace(/\D/g, '').replace(/,/g, '');
@@ -927,46 +1002,3 @@
 </script>
 </body>
 </html>
-{
-  "name": "ابزار جامع بانکی و مالی",
-  "short_name": "ابزار بانکی",
-  "description": "ابزار جامع بانکی و مالی برای محاسبه وام، سپرده، کارمزد و تشخیص بانک",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#FFFFFF",
-  "theme_color": "#1E3A8A",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-1024.png",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ]
-}
